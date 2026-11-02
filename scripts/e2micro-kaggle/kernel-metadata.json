@@ -1,0 +1,23 @@
+{
+  "id": "mgcyaw/e2micro-moneyprinter-voxcpm2-death-20261103",
+  "title": "E2micro Moneyprinter Voxcpm2 Death 20261103",
+  "code_file": "death_documentary.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [
+    "voxcpm2",
+    "moneyprinterturbo",
+    "shorts",
+    "documentary"
+  ],
+  "dataset_sources": [
+    "mgcyaw/e2micro-death-documentary-scenes-20261103"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [],
+  "model_sources": []
+}
