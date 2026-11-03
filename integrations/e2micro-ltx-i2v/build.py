@@ -52,10 +52,9 @@ torch.cuda.empty_cache()
 try:
     from diffusers import LTXVideoTransformer3DModel
     print('TRY_DISTILLED_2B',flush=True)
-    transformer=LTXVideoTransformer3DModel.from_single_file(
-      'https://huggingface.co/Lightricks/LTX-Video/blob/main/ltxv-2b-0.9.8-distilled.safetensors',
-      torch_dtype=torch.float16
-    )
+    from huggingface_hub import hf_hub_download
+    checkpoint=hf_hub_download(repo_id='Lightricks/LTX-Video',filename='ltxv-2b-0.9.8-distilled.safetensors')
+    transformer=LTXVideoTransformer3DModel.from_single_file(checkpoint,torch_dtype=torch.float16)
     pipe=LTXConditionPipeline.from_pretrained('Lightricks/LTX-Video-0.9.5',
       transformer=transformer,torch_dtype=torch.float16)
     pipe.enable_model_cpu_offload()
@@ -191,7 +190,7 @@ print('FINAL_SUCCESS',FINAL,'probe',res.strip(),flush=True)
 (OUT/'generation_report.json').write_text(json.dumps({'model':MODEL_USED,'model_load_error':MODEL_ERROR,'scenes':results,
     'output':str(FINAL),'probe':json.loads(res)},indent=2))
 """)
-nb={"cells":cells,"metadata":{"kernelspec":{"display_name":"Python 3","language":"python","name":"python3"},"language_info":{"name":"python"}},"nbformat":4,"nbformat_minor":5}
+nb={"cells":cells[:-1],"metadata":{"kernelspec":{"display_name":"Python 3","language":"python","name":"python3"},"language_info":{"name":"python"}},"nbformat":4,"nbformat_minor":5}
 (root/"ltx_i2v_documentary.ipynb").write_text(json.dumps(nb,ensure_ascii=False,indent=1))
 meta={"id":"mgcyaw/e2micro-death-ltx2b-i2v-20261103","title":"E2micro Death Documentary LTX 2B Image to Video 20261103",
 "code_file":"ltx_i2v_documentary.ipynb","language":"python","kernel_type":"notebook","is_private":True,
