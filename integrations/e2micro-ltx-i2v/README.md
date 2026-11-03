@@ -1,31 +1,52 @@
 # E2micro × MoneyPrinterTurbo × Cloudflare × VoxCPM2 × Kaggle LTX image-to-video
 
-Reusable adaptation of the MoneyPrinterTurbo stages. A separate Kaggle notebook preserves all existing
-working notebooks and does not require the full MoneyPrinterTurbo app on the E2micro's 1 GB RAM.
+A two-stage video production adapter that follows MoneyPrinterTurbo's
+script → assets → narration → video → subtitle → delivery workflow.
 
-Pipeline:
-1. MoneyPrinterTurbo-style scripted scenes (script.json)
-2. Cloudflare Workers AI generated images (scene_00.jpg to scene_07.jpg)
-3. VoxCPM2 narration generated earlier on Kaggle (speech_*.wav, narration.wav)
-4. LTX 2B model converts the *original* images into short motion clips (motion_*.mp4)
-5. FFmpeg matches motion and captions to narration; encodes vertical MP4
-6. E2micro sends the MP4 to the configured Telegram owner chat.
+This runs through the E2micro controller but does the expensive work on free
+Kaggle compute. The existing MoneyPrinterTurbo fork, all pre-existing VoxCPM2
+notebooks, and the running Telegram bot remain unchanged.
 
-New Kaggle notebook: ltx_i2v_documentary.ipynb
-Kernel slug: mgcyaw/e2micro-death-ltx2b-i2v-20261103
-Input: mgcyaw/e2micro-death-documentary-final-assets-20261103 (private)
-GPU: Nvidia Tesla T4; internet enabled.
+## Inputs
+- Eight Cloudflare Workers AI scenes in the private dataset:
+  mgcyaw/e2micro-death-documentary-final-assets-20261103
+- Voice recordings generated earlier with VoxCPM2 in the same dataset,
+  including narration.wav, speech_00.wav ... speech_07.wav and script.json.
 
-To run again from E2micro:
-    kaggle kernels push -p /home/ubuntu/e2mpt-death/ltx_upgrade --accelerator NvidiaTeslaT4
-    kaggle kernels status mgcyaw/e2micro-death-ltx2b-i2v-20261103
-    python3 /home/ubuntu/e2mpt-death/ltx_upgrade/deliver_ltx.py
+## Stage 1 — Kaggle GPU
+- Notebook: ltx_i2v_documentary.ipynb
+- Kaggle slug: mgcyaw/e2micro-death-ltx2b-i2v-20261103
+- Tries official LTX 2B 0.9.8 distilled native checkpoint, with an explicit
+  non-distilled LTX 0.9.5 fallback if loading fails.
+- Generates 8 short image-conditioned motion MP4s and generation_report.json.
+- Only performs GPU inference. Video encoding is separated so font/FFmpeg
+  errors cannot waste the generated model output.
 
-The notebook first tries the official LTX 2B 0.9.8 distilled checkpoint. If it fails, it
-explicitly labels LTX-Video-0.9.5 fallback (non-distilled). If scene generation fails, a
-Ken Burns scene is substituted so original VoxCPM2 narration is preserved. Inspect
-generation_report.json for the model and which scenes achieved actual AI motion.
+## Stage 2 — Kaggle CPU (successfully verified)
+- Notebook: render_ai_motion.ipynb
+- Kernel slug: mgcyaw/e2micro-ai-motion-final-20261103
+- Consumes a private clips dataset (currently
+  mgcyaw/e2micro-ltx-motion-clips-20261103) plus the original VoxCPM2 assets.
+- Applies subtitles with a portable font fallback, repeats short AI clips
+  to match spoken segments, mixes quiet instrumental audio, and exports a
+  720x1280 MP4 named what_happens_when_we_die_AI_animated.mp4.
 
-Private Telegram credentials are read from E2micro's existing secrets.env; none are
-stored in the notebook, committed to GitHub or printed. Existing working notebooks
-remain unchanged.
+## Stage 3 — E2micro Telegram
+- Script: deliver_ltx.py
+- Reads TG_BOT_TOKEN and TG_OWNER_ID from the existing private E2micro
+  secrets.env at runtime.
+- Downloads the completed CPU render from Kaggle, verifies that motion
+  scenes were genuinely AI generated, then delivers exactly once to the bot.
+- Delivery result for the first successful 0.9.5 motion run: message #138,
+  8/8 actual AI animation scenes, 62.24 seconds, 4.49 MB.
+
+## Notes
+- This is an adapter of MPT's workflow stages, not a deployment of the full
+  MoneyPrinterTurbo web app on E2micro's 1 GiB RAM.
+- The original GPU version generated all 8 images successfully but failed
+  when its final caption cell requested a missing font. We recovered all
+  eight files and successfully rendered them on a separate CPU notebook.
+  The code here now deliberately ends the GPU job after motion generation.
+- Model choice and per-scene success are recorded in generation_report.json.
+- Private datasets and Telegram credentials must never be committed to GitHub.
+- Kaggle and Cloudflare free quotas apply; there is no automatic paid upgrade.
