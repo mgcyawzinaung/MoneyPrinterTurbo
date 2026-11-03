@@ -53,7 +53,7 @@ try:
     from diffusers import LTXVideoTransformer3DModel
     print('TRY_DISTILLED_2B',flush=True)
     transformer=LTXVideoTransformer3DModel.from_single_file(
-      'https://huggingface.co/Lightricks/LTX-Video/resolve/main/ltxv-2b-0.9.8-distilled.safetensors',
+      'https://huggingface.co/Lightricks/LTX-Video/blob/main/ltxv-2b-0.9.8-distilled.safetensors',
       torch_dtype=torch.float16
     )
     pipe=LTXConditionPipeline.from_pretrained('Lightricks/LTX-Video-0.9.5',
