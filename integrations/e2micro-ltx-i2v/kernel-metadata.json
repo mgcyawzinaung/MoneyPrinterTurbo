@@ -1,0 +1,23 @@
+{
+  "id": "mgcyaw/e2micro-death-ltx2b-i2v-20261103",
+  "title": "e2micro death ltx2b i2v 20261103",
+  "code_file": "ltx_i2v_documentary.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [
+    "ltx-video",
+    "image-to-video",
+    "voxcpm2",
+    "moneyprinterturbo"
+  ],
+  "dataset_sources": [
+    "mgcyaw/e2micro-death-documentary-final-assets-20261103"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [],
+  "model_sources": []
+}
