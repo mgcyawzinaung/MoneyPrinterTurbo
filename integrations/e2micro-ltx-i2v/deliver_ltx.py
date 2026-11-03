@@ -3,7 +3,7 @@
 from pathlib import Path
 import subprocess,json,re,urllib.request,uuid,sys
 ROOT=Path(__file__).resolve().parent
-KERNEL="mgcyaw/e2micro-death-ltx2b-i2v-20261103"
+KERNEL="mgcyaw/e2micro-ai-motion-final-20261103"
 STATE=ROOT/"telegram_delivery.json"
 OUTPUT=ROOT/"results"
 TARGET="what_happens_when_we_die_AI_animated.mp4"
